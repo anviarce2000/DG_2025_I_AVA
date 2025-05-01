@@ -1,0 +1,248 @@
+---
+title: "Genome Wide Association Studies (GWAS)"
+subtitle: "Genome-wide association mapping reveals a rich genetic architecture of complex traits in Oryza sativa"
+author: "Fernando Chuquizuta Chavez, Anderson Villacrez Arce, Elder Antonio Quispe Aguilar"
+format:
+  html:
+    toc: true
+    toc-location: left
+    number-sections: true
+    self-contained: true
+editor_options: 
+  chunk_output_type: console
+execute:
+  echo: false
+  warning: false
+---
+
+# Project Setup
+
+```{r}
+#| label:  setup
+
+source("https://inkaverse.com/docs.r")
+
+cran <- c("devtools", "tidyverse", "openxlsx", "rMVP", "CMplot")
+git <- c("hemstrow/snpR") 
+
+suppressPackageStartupMessages({
+  for (pkg in cran) { 
+    if( !require(pkg, character.only = TRUE) ) {
+      install.packages(pkg)
+      library(pkg, character.only = TRUE)
+    } 
+  }
+  
+  for (pkg in git) {
+    if( !require(sub(".*/", "", pkg), character.only = TRUE) ) {
+      devtools::install_github(pkg, upgrade = TRUE)
+      library(sub(".*/", "", pkg), character.only = TRUE)
+    }
+  }
+}); remove(cran, git, pkg)
+
+cat("Project: ", getwd(), "\n")
+session_info()
+```
+
+# Reference
+
+-   (article) https://www.nature.com/articles/ncomms1467
+-   (44K SNP set) http://www.ricediversity.org/data/
+-   (data) http://ricediversity.org/data/sets/44kgwas/
+-   https://github.com/hemstrow/snpR/blob/master/vignettes/snpR_introduction.Rmd
+-   https://doi.org/10.32614/CRAN.package.rMVP
+-   https://www.cog-genomics.org/plink/2.0/
+
+# Tranformar datos
+
+#### *Importante, antes de correr el chunk "bash" asegurarse a haber descargado y configurado el programa PLINK*
+
+```{bash}
+#| eval: false
+
+plink2 --ped sativas413.ped \
+       --map sativas413.map \
+       --export vcf \
+       --out sativas413
+```
+
+# Import data
+
+```{r}
+#Creamos una caprte para guardar los archivos
+
+
+#Leemos los archivos con la data fenotipica, información y genotipica (VCF)
+pheno <- read.xlsx("sativas413.xlsx")
+geno <- snpR::read_vcf("sativas413.vcf")
+info <- read.xlsx("sativas413info.xlsx") %>% 
+  select(id = "GSOR.ID", spop = "Sub-population") %>% 
+  tibble()
+
+sample_meta <- geno %>% 
+  names() %>% 
+  gsub("_.*", "", .) %>% 
+  enframe(value = "pop") %>% 
+  bind_cols(., info)
+
+sample.meta(geno)$spop <- sample_meta$spop
+
+sample.meta(geno)
+snp.meta(geno)
+```
+
+# PCA raw-data
+
+```{r}
+pca <- plot_clusters(geno
+                     , facets = "spop"
+                     , check_duplicates = T
+                     , plot_type = "pca"
+                     )
+
+pca$plots$pca
+```
+
+# rMVP: Memory-efficient, Visualization-enhanced, and Parallel-accelerated Genome-Wide Association Study
+
+## Import data
+
+```{r}
+#Preparamos los individuos de la data "sample_meta"
+sample_meta <- geno %>% 
+  names() %>% 
+  enframe(value = "Taxa") %>% 
+  mutate(HybID = gsub("_.*", "", Taxa)) %>% 
+  select(!name)
+dir.create("mvp") #Usar esta linea cuando no se tenga la carpeta
+dir.create("mvp/gwas") ##Usar esta linea cuando no se tenga la carpeta (En esta carpera se colocaran los resultados)
+pheno <- read.xlsx("sativas413.xlsx") %>% 
+  base::merge(., sample_meta) %>% 
+  select(Taxa, everything()) %>% 
+  select(!HybID) %>% 
+  write_csv("mvp/sativas413.csv")
+
+MVP.Data(fileVCF = "sativas413.vcf"
+         , filePhe = "mvp/sativas413.csv"
+         , sep.phe = ","
+         , priority = "speed"
+         , fileKin = FALSE
+         , filePC = FALSE
+         , out = "mvp/gwas"
+         )
+```
+
+## Kinship
+
+```{r}
+MVP.Data.Kin(fileKin = TRUE
+             , mvp_prefix = 'mvp/gwas'
+             , out = 'mvp/gwas')
+```
+
+## Data input
+
+```{r}
+genotype <- attach.big.matrix("mvp/gwas.geno.desc")
+phenotype <- read.table("mvp/gwas.phe", head = TRUE)
+mapping <- read.table("mvp/gwas.geno.map", head = TRUE)
+kinship <- attach.big.matrix("mvp/gwas.kin.desc")
+```
+
+## GWAS
+
+```{r}
+phenotype %>% names()
+
+# Excluir ID y nombres
+trait_names <- names(phenotype)[-c(1,2)]  
+
+# Hacer PCA una sola vez antes de entrar al loop
+pca <- MVP.PCA(M = genotype, cpu = 1)
+
+for(trait_name in trait_names) {
+  
+  # Seleccionar ID + la variable actual
+  trait <- phenotype %>% select(1, all_of(trait_name))
+  
+  # Reemplazar puntos por guiones bajos en nombres seguros
+  trait_safe_name <- gsub("\\.", "_", trait_name)
+  
+  # Crear carpeta de salida si no existe
+  outdir <- paste0("mvp/gwas_", trait_safe_name)
+  if (!dir.exists(outdir)) { dir.create(outdir, recursive = TRUE) }
+  
+  # Ejecutar GWAS
+  imMVP <- MVP(
+    phe = trait,
+    geno = genotype,
+    map = mapping,
+    K = kinship,
+    method = c("GLM", "MLM", "FarmCPU"),
+    outpath = outdir,
+    file.output = TRUE,
+    file.type = "csv",
+    ncpus = 4
+  )
+  
+  # PCA plot (usar mismo PCA para todos los rasgos)
+  MVP.PCAplot(PCA = pca,
+              pch = 19,
+              outpath = outdir,
+              file.output = TRUE,
+              file.type = "jpg")
+  
+  # SNP density plot
+  MVP.Report(MVP = imMVP,
+             plot.type = "d",
+             col = c("darkgreen", "yellow", "red"),
+             file.type = "jpg",
+             dpi = 300,
+             outpath = outdir)
+  
+  # Distribución fenotípica
+  MVP.Hist(phe = trait,
+           outpath = outdir,
+           file.type = "jpg",
+           breakNum = 18,
+           dpi = 300)
+  
+  # Manhattan plot
+  MVP.Report(imMVP,
+             plot.type = "m",
+             multracks = TRUE,
+             threshold = c(1e-6, 1e-4),
+             threshold.lty = c(1,2),
+             threshold.lwd = c(1,1),
+             threshold.col = c("black","grey"),
+             amplify = TRUE,
+             bin.size = 1e6,
+             chr.den.col = c("darkgreen", "yellow", "red"),
+             signal.col = c("red","green"),
+             signal.cex = c(1,1),
+             file.type = "jpg",
+             memo = "",
+             dpi = 300,
+             outpath = outdir)
+
+  # QQ plot
+  MVP.Report(imMVP,
+             plot.type = "q",
+             col = c("dodgerblue1", "olivedrab3", "darkgoldenrod1"),
+             threshold = 1e6,
+             signal.pch = 19,
+             signal.cex = 1.5,
+             signal.col = "red",
+             box = FALSE,
+             multracks = TRUE,
+             file.type = "jpg",
+             memo = "",
+             dpi = 300,
+             outpath = outdir)
+  
+  # Liberar memoria al final de cada ciclo
+  gc()
+}
+
+```

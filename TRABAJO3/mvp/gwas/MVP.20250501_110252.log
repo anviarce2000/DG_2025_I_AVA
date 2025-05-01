@@ -1,0 +1,125 @@
+======================== Welcome to MVP =========================
+    an R package for Memory-efficient, Visualization-enhanced    
+     and Parallel-accelerated genome-wide association study      
+                      __  __  __   __  ___                       
+                     |  \/  | \ \ / / | _ \                      
+                     | |\/| |  \ V /  |  _/                      
+                     |_|  |_|   \_/   |_|        Version: 1.4.0  
+  Design & Maintain: Lilin Yin, Haohao Zhang, and Xiaolei Liu    
+  Contributors: Zhenshuang Tang, Jingya Xu, Dong Yin, Zhiwu      
+  Zhang, Xiaohui Yuan, Mengjin Zhu, Shuhong Zhao, Xinyun Li      
+  Mailto: xiaoleiliu@mail.hzau.edu.cn, ylilin@mail.hzau.edu.cn   
+=================================================================
+Start: 2025-05-01 11:02:52 -05 
+The log has been output to the file: mvp/gwas/MVP.20250501_110252.log 
+Input data has 413 individuals and 36901 markers 
+Markers are detected to be stored by column 
+Analyzed trait: Flowering.time.at.Arkansas 
+Number of threads used: 4 
+No high performance math library detected! The computational efficiency would be greatly reduced
+Total 39 individuals are removed due to missings 
+Calculate allele frequency... 
+Eigen Decomposition on GRM 
+-------------------------GWAS Start------------------------- 
+General Linear Model (GLM) Start... 
+scanning...
+Genomic inflation factor (lambda): 25.7757 
+Writing results to local file 
+Mixed Linear Model (MLM) Start... 
+Variance components using: BRENT 
+Estimated Vg and Ve: 179.187097 40.688475 
+scanning...
+Genomic inflation factor (lambda): 0.8423 
+Writing results to local file 
+FarmCPU Start... 
+Current loop: 1 out of maximum of 10 
+seqQTN: 
+NULL 
+number of covariates in current loop is: 
+0 
+scanning... 
+Current loop: 2 out of maximum of 10 
+Optimizing Pseudo QTNs... 
+seqQTN: 
+28264 541 
+number of covariates in current loop is: 
+2 
+scanning... 
+Current loop: 3 out of maximum of 10 
+Optimizing Pseudo QTNs... 
+seqQTN: 
+28264 3017 11878 541 21579 16478 25262 17164 24208 26274 10982 
+number of covariates in current loop is: 
+11 
+scanning... 
+Current loop: 4 out of maximum of 10 
+Optimizing Pseudo QTNs... 
+seqQTN: 
+21579 28264 541 21510 17226 21134 11821 21069 19717 23955 1733 14567 11878 3017 24208 26274 25262 10982 16478 17164 
+number of covariates in current loop is: 
+20 
+scanning... 
+Current loop: 5 out of maximum of 10 
+Optimizing Pseudo QTNs... 
+seqQTN: 
+21579 28264 11878 10762 1733 3017 541 30746 29836 24208 26274 25262 21069 17226 21510 14567 11821 19717 10982 21134 16478 17164 
+number of covariates in current loop is: 
+22 
+scanning... 
+Current loop: 6 out of maximum of 10 
+Optimizing Pseudo QTNs... 
+seqQTN: 
+21579 3017 11878 10762 1733 28264 17226 21510 36328 26274 29836 19717 541 25262 11821 10982 24208 30746 14567 21069 16478 21134 17164 
+number of covariates in current loop is: 
+23 
+scanning... 
+Current loop: 7 out of maximum of 10 
+Optimizing Pseudo QTNs... 
+seqQTN: 
+21579 11878 10762 1733 3017 28264 36328 26274 21510 17226 19717 11821 29836 25262 541 24208 30746 10982 14567 21069 16478 21134 17164 
+number of covariates in current loop is: 
+23 
+scanning... 
+Genomic inflation factor (lambda): 0.8817 
+Writing results to local file 
+Significant level: 1.35e-06 
+---------------------Visualization Start-------------------- 
+Phenotype distribution Plotting 
+SNP_Density Plotting 
+Circular_Manhattan Plotting Flowering.time.at.Arkansas.GLM 
+Circular_Manhattan Plotting Flowering.time.at.Arkansas.MLM 
+Circular_Manhattan Plotting Flowering.time.at.Arkansas.FarmCPU 
+Rectangular_Manhattan Plotting Flowering.time.at.Arkansas.GLM 
+Rectangular_Manhattan Plotting Flowering.time.at.Arkansas.MLM 
+Rectangular_Manhattan Plotting Flowering.time.at.Arkansas.FarmCPU 
+Q_Q Plotting Flowering.time.at.Arkansas.GLM 
+Q_Q Plotting Flowering.time.at.Arkansas.MLM 
+Q_Q Plotting Flowering.time.at.Arkansas.FarmCPU 
+Multracks_Rectangular Plotting Flowering.time.at.Arkansas.GLM 
+Multracks_Rectangular Plotting Flowering.time.at.Arkansas.MLM 
+Multracks_Rectangular Plotting Flowering.time.at.Arkansas.FarmCPU 
+Multracks_QQ Plotting Flowering.time.at.Arkansas.GLM 
+Multracks_QQ Plotting Flowering.time.at.Arkansas.MLM 
+Multracks_QQ Plotting Flowering.time.at.Arkansas.FarmCPU 
+Multraits_QQ Plotting Flowering.time.at.Arkansas.GLM 
+Multraits_QQ Plotting Flowering.time.at.Arkansas.MLM 
+Multraits_QQ Plotting Flowering.time.at.Arkansas.FarmCPU 
+Results are stored at Working Directory: mvp/gwas 
+End: 2025-05-01 11:03:17 -05 
+Total running time: 25s 
+===================== MVP ACCOMPLISHED ===================== 
+Computing GRM for 413 individuals using 36901 markers with a step of 10000 
+Deriving relationship matrix successfully 
+Eigen Decomposition on GRM 
+Deriving PCs successfully 
+PCA plot2d 
+SNP_Density Plotting 
+Multracks_Rectangular Plotting Flowering.time.at.Arkansas.GLM 
+Multracks_Rectangular Plotting Flowering.time.at.Arkansas.MLM 
+Multracks_Rectangular Plotting Flowering.time.at.Arkansas.FarmCPU 
+Multracks_QQ Plotting Flowering.time.at.Arkansas.GLM 
+Multracks_QQ Plotting Flowering.time.at.Arkansas.MLM 
+Multracks_QQ Plotting Flowering.time.at.Arkansas.FarmCPU 
+Multraits_QQ Plotting Flowering.time.at.Arkansas.GLM 
+Multraits_QQ Plotting Flowering.time.at.Arkansas.MLM 
+Multraits_QQ Plotting Flowering.time.at.Arkansas.FarmCPU 

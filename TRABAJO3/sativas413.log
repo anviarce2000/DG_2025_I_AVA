@@ -1,0 +1,30 @@
+PLINK v2.0.0-a.6.12 64-bit (20 Apr 2025)
+Options in effect:
+  --export vcf
+  --map sativas413.map
+  --out sativas413
+  --ped sativas413.ped
+
+Hostname: C0325059AD
+Working directory: H:\Mi unidad\SEMESTRE-2025-I\GIT\DG_2025_1_AVA\TRABAJO3
+Start time: Thu May 01 10:59:18 2025
+
+Random number seed: 1746115158
+16053 MiB RAM detected; reserving 8026 MiB for main workspace.
+Using up to 24 threads (change this with --threads).
+--pedmap: 36901 variants in .map file.
+--pedmap: 413 samples present, genotypes extracted to
+sativas413-temporary.bed.smaj .
+Transposing sample-major .bed to sativas413-temporary.pgen , and setting major
+alleles to provisional-REF.
+Transpose complete.
+--pedmap: sativas413-temporary.pgen + sativas413-temporary.pvar +
+sativas413-temporary.psam written. .bed.smaj and .fam.tmp temporary files
+deleted.
+413 samples (0 females, 0 males, 413 ambiguous; 413 founders) loaded from
+sativas413-temporary.psam.
+36901 variants loaded from sativas413-temporary.pvar.
+Note: No phenotype data present.
+--export vcf to sativas413.vcf ... done.
+
+End time: Thu May 01 10:59:20 2025
